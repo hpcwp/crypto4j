@@ -47,7 +47,11 @@ and configuration options.
 
 ### Generated Documentation
 
-TBD - no release yet (stay tuned for Maven Project Docs + Java Docs)
+* 1.0
+  * [Maven Project Docs](https://mbeiter.github.io/crypto4j/docs/1.0/)
+  * Java Docs
+    * [Pool](https://mbeiter.github.io/crypto4j/docs/1.0/pool/apidocs/index.html)
+    * [Primitives](https://mbeiter.github.io/crypto4j/docs/1.0/primitives/apidocs/index.html)
 
 ### More Documentation
 

@@ -5,30 +5,19 @@
     <groupId>org.beiter.michael.crypto4j</groupId>
     <artifactId>crypto4j-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 
     <name>crypto4j Parent</name>
     <description>
         The crypto4j library provides a simple and pluggable crypto abstraction library
-        for Java, including both cryptographic primitives and the artifacts defined in
-        the JOSE standard.
+        for Java.
 
-        This library separates the cryptographic primitives from the JOSE artifacts.
-        The library uses the algorithms available through JCA (JCE). The implementations
-        of the cryptographic primitives provided in this library rely on the standard
-        JCA implementation, and can be configured and extended through the JCA mechanisms.
-
-        The JOSE portion of the library allows custom extensions by either replacing
-        the provided JOSE artifact implementations with custom implementations, or by
-        adding new JOSE artifacts, for instance in form of additional algorithms, which
-        is particularly useful in case that the JOSE standard is updated or in case
-        custom extensions to the JOSE standard should be implemented.
-
-        The implementations available in this library generally come in two variants:
-        a standard implementation of the primitives and advanced algorithms, and a
-        high-performance implementation that takes advantage of implementation patterns
-        that do not compromise cryprographic security, but speed up the overall
-        processing time.
+        For the cryptographic primitives, the library uses the algorithms available
+        through JCA (JCE). It uses caching / pooling mechanisms to improve performance
+        when connecting to the JCA subsystem, which (depending on the integrating
+        application) can lead to significant performance improvements. This library's
+        methods return the standard JCA objects, and can be configured and extended
+        through the default JCA mechanisms.
     </description>
     <url>http://mbeiter.github.io/crypto4j/docs/${project.version}/</url>
 

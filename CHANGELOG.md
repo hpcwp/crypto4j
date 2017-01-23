@@ -1,5 +1,9 @@
 # crypto4j Library Change Log
 
-## 1.0-SNAPSHOT
+## 1.0
 
-Still working on it :)
+Initial release with support for:
+
+- Pools
+- Pooled SecureRandom artifacts
+- Pooled MessageDigest artifacts

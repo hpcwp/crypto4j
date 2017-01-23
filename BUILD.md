@@ -136,7 +136,7 @@ For automated builds on a single-user machine, it is okay to specify the passphr
 
 ### Push the site to Github
 
-- Copy the staging folder as the correct version folder into the project's "site" folder (e.g. `[...]/site/1.0/]
+- Copy the staging folder as the correct version folder into the project's "docs" folder (e.g. `[...]/docs/1.0/]
 - Commit and push, using "Release 1.0 documentation" as the commit message
 - Update the [README.md](README.md) with a link to the new documentation, and make sure that the link works
 - Check if the site looks okay on GitHub pages
