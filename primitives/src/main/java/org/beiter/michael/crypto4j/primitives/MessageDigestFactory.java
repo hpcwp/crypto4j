@@ -134,7 +134,9 @@ public final class MessageDigestFactory {
      * next time this method is called.</li>
      * <li>If you need tight control over the singleton, including its lifecycle and configuration, then you should
      * create such objects with the {@code getInstance()} method and maintain their state as "singletons" in your
-     * application's business logic.</li>
+     * application's business logic. The JCA {@link MessageDigest} has a {@code reset()} method to reset its internal
+     * state. Depending on how the object is used in your application, you should be sure to call this method before
+     * re-using the shared object to <b>prevent digest corruption</b></li>
      * </ul>
      *
      * @param mdSpec The {@link MessageDigestSpec} to initialize the instance with
@@ -173,7 +175,12 @@ public final class MessageDigestFactory {
             }
         }
 
-        return SINGLETONS.get(key);
+        final MessageDigest messageDigest = SINGLETONS.get(key);
+
+        // reset the digest, in case that this was not done earlier by the user
+        messageDigest.reset();
+
+        return messageDigest;
     }
 
     /**
@@ -264,7 +271,12 @@ public final class MessageDigestFactory {
         try {
             // Note: the get() operation can lead to an NPE if the pool is reset at the same time when this method
             // is executed. Any exception that would happen during the pool operation is swallowed by the pool.
-            return OBJECT_POOL.get(key).borrowObject();
+            final MessageDigest messageDigest = OBJECT_POOL.get(key).borrowObject();
+
+            // reset the digest, in case that this was not done earlier when the object was returned to the pool
+            messageDigest.reset();
+
+            return messageDigest;
 
         } catch (NullPointerException e) {
             final String error = "Error when returning the object to the pool."
@@ -289,7 +301,7 @@ public final class MessageDigestFactory {
      * varying specifications, provide the object spec used to create the pooled object, thus allowing this method to
      * identify the correct pool to return the object to.
      *
-     * @param mdSpec       The object spec used to create the pooled object
+     * @param mdSpec        The object spec used to create the pooled object
      * @param messageDigest The object to be returned to the pool
      * @throws NullPointerException  When {@code mdSpec} or {@code messageDigest} are {@code null}
      * @throws IllegalStateException If no pool exists for the provided object spec, or
@@ -315,6 +327,9 @@ public final class MessageDigestFactory {
         // return the object to the correct pool
         if (OBJECT_POOL.containsKey(key)) {
             try {
+                // reset the digest, in case the caller did not do this before returning the object to the pool
+                messageDigest.reset();
+
                 // Note: the get() operation can lead to an NPE if the pool is reset at the same time when this method
                 // is executed. Any exception that would happen during the pool operation is swallowed by the pool.
                 OBJECT_POOL.get(key).returnObject(messageDigest);

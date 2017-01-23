@@ -4,9 +4,11 @@
 
 #### Enhancements
 
-- Fixed handling of confidential data in `MessageDigestUtil` (fixes #1)
+- Improved handling of confidential data in `MessageDigestUtil` (fixes #1)
 
 #### Defects
+
+- Call `reset()` on the JCA `MessageDigest` object to prevent digest corruption (fixes #2)
 
 ## 1.0
 

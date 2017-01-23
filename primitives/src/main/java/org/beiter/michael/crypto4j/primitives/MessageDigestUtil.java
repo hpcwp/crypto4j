@@ -209,7 +209,9 @@ public final class MessageDigestUtil {
         final java.security.MessageDigest digest = MessageDigestFactory.getPooledInstance(mdSpec, poolSpec);
 
         // compute and finalize the hash
+        digest.reset(); // reset the digest in case we got a digest from the pool that has not yet been reset
         final byte[] result = digest.digest(input);
+        digest.reset(); // reset the digest because we are nice and want to be sure that future users get a fresh start
 
         // return the MD instance to the pool
         MessageDigestFactory.returnPooledInstance(mdSpec, digest);
