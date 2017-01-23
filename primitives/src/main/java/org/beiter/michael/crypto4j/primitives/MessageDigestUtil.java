@@ -142,7 +142,7 @@ public final class MessageDigestUtil {
 
         // normalize the string
         // compiler will optimize the extra variable assignment
-        String input = Normalizer.normalize(payload, Normalizer.Form.NFC);
+        final String input = Normalizer.normalize(payload, Normalizer.Form.NFC);
 
         return getBytes(StringUtils.getBytesUnchecked(input, CharEncoding.UTF_8), mdSpec, poolSpec);
     }
