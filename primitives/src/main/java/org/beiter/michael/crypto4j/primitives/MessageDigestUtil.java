@@ -35,12 +35,15 @@ package org.beiter.michael.crypto4j.primitives;
 
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.lang3.Validate;
+import org.beiter.michael.array.Cleanser;
 import org.beiter.michael.crypto4j.pool.PoolSpec;
 import org.beiter.michael.crypto4j.pool.PoolSpecBuilder;
 import org.beiter.michael.crypto4j.primitives.spec.MessageDigestSpec;
 
 import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
+import java.util.Arrays;
 
 /**
  * This class provides utility methods for common message digest operations, namely on {@code String} and {@code byte[]}
@@ -76,7 +79,7 @@ public final class MessageDigestUtil {
      * @param payload The data to compute the MD for
      * @param mdSpec  The MD spec to use
      * @return The message digest (hash) of the payload
-     * @throws NullPointerException     When {@code payload}, {@code poolSpec}, or {@code mdSpec} are {@code null}
+     * @throws NullPointerException     When {@code payload} or {@code mdSpec} are {@code null}
      * @throws NoSuchAlgorithmException When the hash algorithm is not available
      * @throws FactoryException         When the configured provider is not registered in the security provider list,
      *                                  or when the pool operation fails
@@ -85,6 +88,12 @@ public final class MessageDigestUtil {
      */
     public static byte[] getBytes(final String payload, final MessageDigestSpec mdSpec)
             throws FactoryException, NoSuchAlgorithmException {
+
+        Validate.notNull(payload, "The validated object 'payload' is null");
+        Validate.notNull(mdSpec, "The validated object 'mdSpec' is null");
+
+        // no need for defensive copies of String
+        // not copying mdSpec, because the called method in this class makes a defensive copy
 
         return getBytes(payload, mdSpec, PoolSpecBuilder.build(mdSpec.getAdditionalProperties()));
     }
@@ -102,7 +111,7 @@ public final class MessageDigestUtil {
      * @param payload The data to compute the MD for
      * @param mdSpec  The MD spec to use
      * @return The message digest (hash) of the payload
-     * @throws NullPointerException     When {@code payload}, {@code poolSpec}, or {@code mdSpec} are {@code null}
+     * @throws NullPointerException     When {@code payload} or {@code mdSpec} are {@code null}
      * @throws NoSuchAlgorithmException When the hash algorithm is not available
      * @throws FactoryException         When the configured provider is not registered in the security provider list,
      *                                  or when the pool operation fails
@@ -111,6 +120,12 @@ public final class MessageDigestUtil {
      */
     public static byte[] getBytes(final byte[] payload, final MessageDigestSpec mdSpec)
             throws FactoryException, NoSuchAlgorithmException {
+
+        Validate.notNull(payload, "The validated object 'payload' is null");
+        Validate.notNull(mdSpec, "The validated object 'mdSpec' is null");
+
+        // not copying the payload, because the called method in this class makes a defensive copy
+        // not copying mdSpec, because the called method in this class makes a defensive copy
 
         return getBytes(payload, mdSpec, PoolSpecBuilder.build(mdSpec.getAdditionalProperties()));
     }
@@ -140,11 +155,25 @@ public final class MessageDigestUtil {
     public static byte[] getBytes(final String payload, final MessageDigestSpec mdSpec, final PoolSpec poolSpec)
             throws FactoryException, NoSuchAlgorithmException {
 
+        Validate.notNull(payload, "The validated object 'payload' is null");
+        Validate.notNull(mdSpec, "The validated object 'mdSpec' is null");
+        Validate.notNull(poolSpec, "The validated object 'poolSpec' is null");
+
+        // no need for defensive copies of String
+        // not copying mdSpec, because the called method in this class makes a defensive copy
+        // not copying poolSpec, because the called method in this class makes a defensive copy
+
         // normalize the string
         // compiler will optimize the extra variable assignment
-        final String input = Normalizer.normalize(payload, Normalizer.Form.NFC);
+        final String inputString = Normalizer.normalize(payload, Normalizer.Form.NFC);
+        final byte[] inputByte = StringUtils.getBytesUnchecked(inputString, CharEncoding.UTF_8);
 
-        return getBytes(StringUtils.getBytesUnchecked(input, CharEncoding.UTF_8), mdSpec, poolSpec);
+        final byte[] result = getBytes(inputByte, mdSpec, poolSpec);
+
+        // clear the normalized byte array
+        Cleanser.wipe(inputByte);
+
+        return result;
     }
 
     /**
@@ -166,14 +195,27 @@ public final class MessageDigestUtil {
     public static byte[] getBytes(final byte[] payload, final MessageDigestSpec mdSpec, final PoolSpec poolSpec)
             throws FactoryException, NoSuchAlgorithmException {
 
+        Validate.notNull(payload, "The validated object 'payload' is null");
+        Validate.notNull(mdSpec, "The validated object 'mdSpec' is null");
+        Validate.notNull(poolSpec, "The validated object 'poolSpec' is null");
+
+        // not copying mdSpec
+        // not copying poolSpec
+
+        // make a defensive copy of the payload
+        final byte[] input = Arrays.copyOf(payload, payload.length);
+
         // get an MD instance
         final java.security.MessageDigest digest = MessageDigestFactory.getPooledInstance(mdSpec, poolSpec);
 
         // compute and finalize the hash
-        final byte[] result = digest.digest(payload);
+        final byte[] result = digest.digest(input);
 
         // return the MD instance to the pool
         MessageDigestFactory.returnPooledInstance(mdSpec, digest);
+
+        // clear the temp copy
+        Cleanser.wipe(input);
 
         return result;
     }
